@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>the worst fucking unblocker ever</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f0e0e;
+      --input-bg: #1a1919;
+      --text: #fff;
+      --accent: #b503e23;
+      --border: #222;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      color: #e2e2e2;
+    }
+
+    .search-container {
+      background: var(--input-bg);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      padding: 0.5em 1em;
+      box-shadow: 0 0 5px rgba(0,0,0,0.5);
+      max-width: 600px;
+      width: 90%;
+    }
+
+    input {
+      flex: 1;
+      padding: 0.8em 1em;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 1em;
+    }
+
+    button {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1.2em;
+      padding: 0 10px;
+    }
+
+    button:hover {
+      color: white;
+    }
+
+    iframe {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 560px;
+      height: 315px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    #rip-message {
+      margin-top: 10px;
+      color: #b503e2;
+      font-style: italic;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.8em;
+      color: #888;
+    }
+
+    .tab-cloak-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--input-bg);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .tab-cloak-button {
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .tab-cloak-button:hover {
+      background: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <h1><i class="fa-solid fa-record-vinyl"></i> Music Player</h1>
+
+  <div class="search-container">
+    <input id="artist" type="text" placeholder="Artist">
+    <input id="song" type="text" placeholder="Song">
+    <button onclick="searchAndPlay()"><i class="fas fa-search"></i></button>
+  </div>
+
+  <div id="player"></div>
+  <div id="rip-message"></div>
+
+  <footer>© cj (triangledheart on discord) • Inspired by https://birdyblue.galipan.org (YES THIS SITE WAS MADE BY CHATGPT IM SORRY) </footer>
+
+  <div class="tab-cloak-container">
+    <button class="tab-cloak-button" onclick="changeTab('clever')">Clever</button>
+    <button class="tab-cloak-button" onclick="changeTab('ncedcloud')">NCEDCloud</button>
+    <button class="tab-cloak-button" onclick="changeTab('canvas')">Canvas</button>
+  </div>
+
+  <script>
+    const deceasedArtists = [
+      "2pac", "tupac", "notorious b.i.g", "biggie", "juice wrld",
+      "xxxtentacion", "michael jackson", "prince", "dmx", "mac miller",
+      "lil peep", "avicii", "freddie mercury", "bob marley", "wifiskeleton"
+    ];
+
+    function searchAndPlay() {
+      const artist = document.getElementById("artist").value.trim();
+      const song = document.getElementById("song").value.trim();
+
+      if (!artist && !song) {
+        alert("Please enter either an artist or a song name.");
+        return;
+      }
+
+      const query = encodeURIComponent(`${artist} ${song}`);
+
+      fetch(`https://corsproxy.io/?https://www.youtube.com/results?search_query=${query}`)
+        .then(response => response.text())
+        .then(html => {
+          const videoIdMatch = html.match(/"videoId":"(.*?)"/);
+          if (videoIdMatch && videoIdMatch[1]) {
+            const videoId = videoIdMatch[1];
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            document.getElementById("player").innerHTML =
+              `<iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+
+            const artistLower = artist.toLowerCase();
+            const isDeceased = deceasedArtists.includes(artistLower);
+            document.getElementById("rip-message").textContent = isDeceased ? "rip legend..." : "";
+          } else {
+            document.getElementById("player").innerHTML = `<p>No video found.</p>`;
+            document.getElementById("rip-message").textContent = "";
+          }
+        })
+        .catch(err => {
+          document.getElementById("player").innerHTML = `<p>Error loading video.</p>`;
+          document.getElementById("rip-message").textContent = "";
+          console.error(err);
+        });
+    }
+
+    function changeTab(type) {
+      const existingFavicon = document.querySelector('link[rel="icon"]');
+      if (existingFavicon) {
+        existingFavicon.remove();
+      }
+
+      if (type === 'clever') {
+        document.title = 'Clever | Portal';
+        const favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.href = 'https://assets.clever.com/launchpad/b79900d94/favicon.ico?1';
+        document.head.appendChild(favicon);
+      } else if (type === 'ncedcloud') {
+        alert('Sorry but this cloak isn\'t available yet..');
+      } else if (type === 'canvas') {
+        document.title = 'Dashboard';
+        const favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.href = 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico';
+        document.head.appendChild(favicon);
+      }
+    }
+  </script>
+</body>
+</html>
