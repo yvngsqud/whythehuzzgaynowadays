@@ -152,30 +152,20 @@
       }
 
       const query = encodeURIComponent(`${artist} ${song}`);
-
-      fetch(`https://corsproxy.io/?https://www.youtube.com/results?search_query=${query}`)
-        .then(response => response.text())
-        .then(html => {
-          const videoIdMatch = html.match(/"videoId":"(.*?)"/);
-          if (videoIdMatch && videoIdMatch[1]) {
-            const videoId = videoIdMatch[1];
-            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-            document.getElementById("player").innerHTML =
-              `<iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-
-            const artistLower = artist.toLowerCase();
-            const isDeceased = deceasedArtists.includes(artistLower);
-            document.getElementById("rip-message").textContent = isDeceased ? "rip legend..." : "";
-          } else {
-            document.getElementById("player").innerHTML = `<p>No video found.</p>`;
-            document.getElementById("rip-message").textContent = "";
-          }
+      fetch(`https://noembed.com/embed?url=https://www.youtube.com/results?search_query=${query}`)
+        .then(res => res.json())
+        .then(data => {
+          const videoUrl = `https://www.youtube.com/embed?listType=search&list=${query}&autoplay=1`;
+          document.getElementById("player").innerHTML =
+            `<iframe src="${videoUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
         })
-        .catch(err => {
-          document.getElementById("player").innerHTML = `<p>Error loading video.</p>`;
-          document.getElementById("rip-message").textContent = "";
-          console.error(err);
+        .catch(() => {
+          document.getElementById("player").innerHTML = `<p>Could not embed video.</p>`;
         });
+
+      const artistLower = artist.toLowerCase();
+      const isDeceased = deceasedArtists.includes(artistLower);
+      document.getElementById("rip-message").textContent = isDeceased ? "rip legend..." : "";
     }
 
     function changeTab(type) {
